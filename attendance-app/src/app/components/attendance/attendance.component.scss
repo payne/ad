@@ -1,0 +1,156 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-card {
+  margin-bottom: 20px;
+}
+
+.search-field {
+  width: 100%;
+  font-size: 1.2em;
+}
+
+.matches-container {
+  margin-top: 20px;
+
+  h3 {
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+mat-chip-listbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+mat-chip-option {
+  cursor: pointer;
+  font-size: 1.1em;
+
+  &:not(.already-recorded):hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &.already-recorded {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  strong {
+    margin-right: 8px;
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: #2196F3;
+    }
+  }
+
+  .member-name {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+    margin-left: 4px;
+  }
+}
+
+.attendance-card {
+  mat-card-header {
+    margin-bottom: 16px;
+  }
+}
+
+.attendance-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .callsign {
+    font-weight: bold;
+    font-size: 1.1em;
+    min-width: 100px;
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: #2196F3;
+    }
+  }
+
+  .name {
+    flex: 1;
+  }
+}
+
+.timestamp {
+  font-size: 0.85em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+}
+
+.no-attendance {
+  text-align: center;
+  padding: 40px;
+  color: rgba(255, 255, 255, 0.5);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 1.1em;
+  }
+}
+
+mat-list-item {
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 48px;
+}
+
+.club-badges {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.club-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.member-photo {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 8px;
+  margin-top: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

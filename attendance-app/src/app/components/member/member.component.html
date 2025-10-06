@@ -1,0 +1,24 @@
+<div matListItemTitle class="attendance-item">
+  <span class="callsign"><a [href]="'https://www.qrz.com/db/' + record.callsign" target="_blank" rel="noopener noreferrer">{{ record.callsign }}</a></span>
+  <span> is </span>
+  <span class="name">{{ record.name }}</span>
+  <span class="club-badges">
+    <span *ngFor="let club of record.clubs" class="club-badge">{{ club }}</span>
+  </span>
+</div>
+<div matListItemLine class="timestamp">
+  {{ record.timestamp | date:'short' }}
+</div>
+<div *ngIf="showPhotosEnabled" matListItemLine>
+  <img [src]="getPhotoUrl(record.callsign)"
+       [alt]="record.callsign + ' photo'"
+       (error)="handleImageError($event, record.callsign)"
+       class="member-photo">
+</div>
+<button
+  mat-icon-button
+  matListItemMeta
+  (click)="onRemove()"
+  aria-label="Remove attendance">
+  <mat-icon>close</mat-icon>
+</button>

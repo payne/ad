@@ -1,0 +1,113 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>{{ clubName || 'Club Attendance' }}</span>
+  <span class="spacer"></span>
+  <button mat-icon-button [matBadge]="attendanceCount" matBadgeColor="accent" aria-label="Attendance count">
+    <mat-icon>people</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-menu #menu="matMenu">
+  <div mat-menu-item (click)="$event.stopPropagation()" class="menu-toggle-item">
+    <mat-slide-toggle [(ngModel)]="searchByNameEnabled" (change)="onSearchChange()">
+      Search names & callsigns
+    </mat-slide-toggle>
+  </div>
+  <div mat-menu-item (click)="$event.stopPropagation()" class="menu-toggle-item">
+    <mat-slide-toggle [(ngModel)]="showPhotosEnabled">
+      Show photos
+    </mat-slide-toggle>
+  </div>
+  <button mat-menu-item (click)="downloadAttendanceJSON()">
+    <mat-icon>download</mat-icon>
+    <span>Download Attendance JSON</span>
+  </button>
+  <button mat-menu-item (click)="clearAllAttendance()">
+    <mat-icon>delete_sweep</mat-icon>
+    <span>Clear All Attendance</span>
+  </button>
+  <button mat-menu-item routerLink="/browse">
+    <mat-icon>list</mat-icon>
+    <span>Browse Members</span>
+  </button>
+  <button mat-menu-item routerLink="/about">
+    <mat-icon>info</mat-icon>
+    <span>About: Last update 10/6/2025 at 01:31 Zulu</span>
+  </button>
+</mat-menu>
+
+<div class="container">
+  <!-- Callsign Search -->
+  <mat-card class="search-card">
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Enter Callsign</mat-label>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+          placeholder="K0..."
+          autocomplete="off"
+          autofocus>
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- Matched Members -->
+      <div *ngIf="matchedMembers.length > 0" class="matches-container">
+        <h3>Matches ({{ matchedMembers.length }})</h3>
+        <mat-chip-listbox aria-label="Matched callsigns">
+          <mat-chip-option
+            *ngFor="let member of matchedMembers"
+            (click)="recordAttendance(member)"
+            [disabled]="isRecorded(member.callsign)"
+            [class.already-recorded]="isRecorded(member.callsign)">
+            <div class="member-info">
+              <div>
+                <strong><a [href]="'https://www.qrz.com/db/' + member.callsign" target="_blank" rel="noopener noreferrer">{{ member.callsign }}</a></strong>
+                <span class="member-name">{{ member.name }}</span>
+                <span class="club-badges">
+                  <span *ngFor="let club of member.clubs" class="club-badge">{{ club }}</span>
+                </span>
+                <mat-icon *ngIf="isRecorded(member.callsign)" matChipTrailingIcon>check_circle</mat-icon>
+              </div>
+              <img *ngIf="showPhotosEnabled"
+                   [src]="getPhotoUrl(member.callsign)"
+                   [alt]="member.callsign + ' photo'"
+                   (error)="handleImageError($event, member.callsign)"
+                   class="member-photo"
+                   [style.display]="'block'">
+            </div>
+          </mat-chip-option>
+        </mat-chip-listbox>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Attendance List -->
+  <mat-card class="attendance-card">
+    <mat-card-header>
+      <mat-card-title>Attendance ({{ attendanceCount }})</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list *ngIf="attendanceRecords.length > 0; else noAttendance">
+        <mat-list-item *ngFor="let record of attendanceRecords">
+          <app-member
+            [record]="record"
+            [showPhotosEnabled]="showPhotosEnabled"
+            (remove)="removeAttendance($event)">
+          </app-member>
+        </mat-list-item>
+      </mat-list>
+
+      <ng-template #noAttendance>
+        <div class="no-attendance">
+          <mat-icon>person_outline</mat-icon>
+          <p>No attendance recorded yet</p>
+        </div>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>
