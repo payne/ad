@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -54,7 +55,8 @@ export class AttendanceComponent implements OnInit {
 
   constructor(
     private rosterService: RosterService,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
@@ -84,6 +86,40 @@ export class AttendanceComponent implements OnInit {
 
     searchMethod.subscribe(members => {
       this.matchedMembers = members;
+    });
+  }
+
+  /**
+   * Handle Enter key press
+   */
+  onEnter(): void {
+    const term = this.searchTerm.trim().toUpperCase();
+    if (!term) return;
+
+    // Check if we have an exact match locally
+    const localMatch = this.matchedMembers.find(m => m.callsign.toUpperCase() === term);
+    if (localMatch) {
+      return;
+    }
+
+    // Call external API
+    this.http.get<any>(`https://callook.info/${term}/json`).subscribe({
+      next: (data) => {
+        if (data.status === 'VALID') {
+          const newMember: Member = {
+            name: data.name,
+            callsign: data.current.callsign,
+            clubs: []
+          };
+          // Check if it's already in matchedMembers to avoid duplicates
+          if (!this.matchedMembers.some(m => m.callsign === newMember.callsign)) {
+            this.matchedMembers.push(newMember);
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching callsign info:', err);
+      }
     });
   }
 

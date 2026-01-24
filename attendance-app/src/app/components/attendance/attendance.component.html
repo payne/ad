@@ -49,6 +49,7 @@
           type="text"
           [(ngModel)]="searchTerm"
           (ngModelChange)="onSearchChange()"
+          (keydown.enter)="onEnter()"
           placeholder="K0..."
           autocomplete="off"
           autofocus>
