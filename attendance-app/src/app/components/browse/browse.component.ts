@@ -10,10 +10,15 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { RosterService, Member } from '../../services/roster.service';
+import { MemberKnowledgeService } from '../../services/member-knowledge.service';
 
 @Component({
   selector: 'app-browse',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -24,7 +29,10 @@ import { RosterService, Member } from '../../services/roster.service';
     MatCardModule,
     MatChipsModule,
     MatToolbarModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './browse.component.html',
   styleUrl: './browse.component.scss'
@@ -32,19 +40,21 @@ import { RosterService, Member } from '../../services/roster.service';
 export class BrowseComponent implements OnInit {
   members: Member[] = [];
   filteredMembers: Member[] = [];
-  displayedColumns: string[] = ['callsign', 'firstName', 'lastName', 'clubs'];
+  displayedColumns: string[] = ['callsign', 'firstName', 'lastName', 'clubs', 'doNotKnow'];
 
   // Club filters
   showAARC = true;
   showBARC = true;
   showPhotosEnabled = false;
+  browseMode: 'all' | 'known' | 'unknown' = 'all';
 
   // Photo map: callsign -> file extension
   private photoMap: { [callsign: string]: string } = {};
 
   constructor(
     private rosterService: RosterService,
-    private http: HttpClient
+    private http: HttpClient,
+    private memberKnowledgeService: MemberKnowledgeService
   ) {}
 
   ngOnInit(): void {
@@ -72,10 +82,13 @@ export class BrowseComponent implements OnInit {
     this.filteredMembers = this.members.filter(member => {
       const hasAARC = member.clubs.includes('AARC');
       const hasBARC = member.clubs.includes('BARC');
+      const isKnown = this.isKnown(member.callsign);
 
       if (!this.showAARC && hasAARC && !hasBARC) return false;
       if (!this.showBARC && hasBARC && !hasAARC) return false;
       if (!this.showAARC && !this.showBARC) return false;
+      if (this.browseMode === 'known' && !isKnown) return false;
+      if (this.browseMode === 'unknown' && isKnown) return false;
 
       return true;
     });
@@ -162,9 +175,34 @@ export class BrowseComponent implements OnInit {
    */
   updateDisplayedColumns(): void {
     if (this.showPhotosEnabled) {
-      this.displayedColumns = ['photo', 'callsign', 'firstName', 'lastName', 'clubs'];
+      this.displayedColumns = ['photo', 'callsign', 'firstName', 'lastName', 'clubs', 'doNotKnow'];
     } else {
-      this.displayedColumns = ['callsign', 'firstName', 'lastName', 'clubs'];
+      this.displayedColumns = ['callsign', 'firstName', 'lastName', 'clubs', 'doNotKnow'];
+    }
+  }
+
+  setBrowseMode(mode: 'all' | 'known' | 'unknown'): void {
+    this.browseMode = mode;
+    this.applyFilters();
+  }
+
+  isKnown(callsign: string): boolean {
+    return this.memberKnowledgeService.isKnown(callsign);
+  }
+
+  isUnknown(callsign: string): boolean {
+    return !this.isKnown(callsign);
+  }
+
+  updateKnownState(callsign: string, unknown: boolean): void {
+    this.memberKnowledgeService.setKnown(callsign, !unknown);
+    this.applyFilters();
+  }
+
+  clearKnownMembers(): void {
+    if (confirm('Clear all saved known members?')) {
+      this.memberKnowledgeService.clearKnown();
+      this.applyFilters();
     }
   }
 
