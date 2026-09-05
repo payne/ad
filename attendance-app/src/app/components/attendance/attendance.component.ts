@@ -16,6 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RosterService, Member } from '../../services/roster.service';
 import { AttendanceService, AttendanceRecord } from '../../services/attendance.service';
+import { MemberKnowledgeService } from '../../services/member-knowledge.service';
 import { MemberComponent } from '../member/member.component';
 
 @Component({
@@ -48,6 +49,7 @@ export class AttendanceComponent implements OnInit {
   clubName = '';
   searchByNameEnabled = false;
   showPhotosEnabled = false;
+  memberVisibility: 'all' | 'known' | 'unknown' = 'all';
 
   // Track which photo extensions have been tried for each callsign
   private photoExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -56,7 +58,8 @@ export class AttendanceComponent implements OnInit {
   constructor(
     private rosterService: RosterService,
     private attendanceService: AttendanceService,
-    private http: HttpClient
+    private http: HttpClient,
+    private memberKnowledgeService: MemberKnowledgeService
   ) { }
 
   ngOnInit(): void {
@@ -85,7 +88,7 @@ export class AttendanceComponent implements OnInit {
       : this.rosterService.searchByCallsign(this.searchTerm);
 
     searchMethod.subscribe(members => {
-      this.matchedMembers = members;
+      this.matchedMembers = this.filterMembersByVisibility(members);
     });
   }
 
@@ -111,6 +114,9 @@ export class AttendanceComponent implements OnInit {
             callsign: data.current.callsign,
             clubs: []
           };
+          if (!this.shouldShowMember(newMember)) {
+            return;
+          }
           // Check if it's already in matchedMembers to avoid duplicates
           if (!this.matchedMembers.some(m => m.callsign === newMember.callsign)) {
             this.matchedMembers.push(newMember);
@@ -172,6 +178,11 @@ export class AttendanceComponent implements OnInit {
     return this.attendanceRecords.length;
   }
 
+  setMemberVisibility(mode: 'all' | 'known' | 'unknown'): void {
+    this.memberVisibility = mode;
+    this.onSearchChange();
+  }
+
   /**
    * Download attendance records as JSON
    */
@@ -225,5 +236,23 @@ export class AttendanceComponent implements OnInit {
       // No more extensions to try, hide the image
       img.style.display = 'none';
     }
+  }
+
+  private filterMembersByVisibility(members: Member[]): Member[] {
+    return members.filter(member => this.shouldShowMember(member));
+  }
+
+  private shouldShowMember(member: Member): boolean {
+    const isKnown = this.memberKnowledgeService.isKnown(member.callsign);
+
+    if (this.memberVisibility === 'known') {
+      return isKnown;
+    }
+
+    if (this.memberVisibility === 'unknown') {
+      return !isKnown;
+    }
+
+    return true;
   }
 }

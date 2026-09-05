@@ -20,6 +20,21 @@
       Show photos
     </mat-slide-toggle>
   </div>
+  <button mat-menu-item (click)="setMemberVisibility('all')">
+    <mat-icon>groups</mat-icon>
+    <span>Show everyone</span>
+    <mat-icon *ngIf="memberVisibility === 'all'">check</mat-icon>
+  </button>
+  <button mat-menu-item (click)="setMemberVisibility('known')">
+    <mat-icon>visibility</mat-icon>
+    <span>Hide people I don't know</span>
+    <mat-icon *ngIf="memberVisibility === 'known'">check</mat-icon>
+  </button>
+  <button mat-menu-item (click)="setMemberVisibility('unknown')">
+    <mat-icon>visibility_off</mat-icon>
+    <span>Show only people I don't know</span>
+    <mat-icon *ngIf="memberVisibility === 'unknown'">check</mat-icon>
+  </button>
   <button mat-menu-item (click)="downloadAttendanceJSON()">
     <mat-icon>download</mat-icon>
     <span>Download Attendance JSON</span>
@@ -83,6 +98,9 @@
             </div>
           </mat-chip-option>
         </mat-chip-listbox>
+      </div>
+      <div *ngIf="searchTerm.trim() && matchedMembers.length === 0" class="matches-container">
+        <h3>No visible matches</h3>
       </div>
     </mat-card-content>
   </mat-card>
