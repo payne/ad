@@ -18,6 +18,7 @@ import { MemberKnowledgeService } from '../../services/member-knowledge.service'
 
 @Component({
   selector: 'app-browse',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
