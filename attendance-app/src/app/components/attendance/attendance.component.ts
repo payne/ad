@@ -18,6 +18,7 @@ import { RosterService, Member } from '../../services/roster.service';
 import { AttendanceService, AttendanceRecord } from '../../services/attendance.service';
 import { MemberKnowledgeService } from '../../services/member-knowledge.service';
 import { MemberComponent } from '../member/member.component';
+import { BUILD_TIMESTAMP } from '../../build-info';
 
 @Component({
   selector: 'app-attendance',
@@ -50,6 +51,7 @@ export class AttendanceComponent implements OnInit {
   searchByNameEnabled = false;
   showPhotosEnabled = false;
   memberVisibility: 'all' | 'known' | 'unknown' = 'all';
+  readonly buildTimestamp = new Date(BUILD_TIMESTAMP);
 
   // Track which photo extensions have been tried for each callsign
   private photoExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];

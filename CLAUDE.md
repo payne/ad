@@ -38,8 +38,11 @@ ng serve
 
 **Build for production:**
 ```bash
-ng build --configuration production --base-href /ad/
+npm run build:gh-pages
 ```
+This runs `scripts/generate-build-info.js` (which stamps `src/app/build-info.ts` with the current
+timestamp, shown in the About page and menu) before invoking
+`ng build --configuration production --base-href /ad/`.
 
 **Run tests:**
 ```bash
@@ -55,7 +58,7 @@ ng build --watch --configuration development
 
 **Build and deploy (from `attendance-app/` directory):**
 ```bash
-ng build --configuration production --base-href /ad/
+npm run build:gh-pages
 npx angular-cli-ghpages --dir=dist/attendance-app/browser
 ```
 

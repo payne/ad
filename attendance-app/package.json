@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:gh-pages": "node scripts/generate-build-info.js && ng build --configuration production --base-href /ad/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

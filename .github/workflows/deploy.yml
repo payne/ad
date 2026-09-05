@@ -28,7 +28,7 @@ jobs:
         working-directory: attendance-app
 
       - name: Build
-        run: npx ng build --configuration production --base-href /ad/
+        run: npm run build:gh-pages
         working-directory: attendance-app
 
       - name: Deploy to GitHub Pages
