@@ -63,7 +63,7 @@
         <ng-container matColumnDef="callsign">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Callsign</th>
           <td mat-cell *matCellDef="let member">
-            <a [href]="'https://www.qrz.com/db/' + member.callsign" target="_blank" class="callsign-link">{{ member.callsign }}</a>
+            <a [href]="'https://www.qrz.com/db/' + member.callsign" target="_blank" rel="noopener noreferrer" class="callsign-link">{{ member.callsign }}</a>
           </td>
         </ng-container>
 
